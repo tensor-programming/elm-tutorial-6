@@ -1,24 +1,20 @@
 module Main exposing (..)
 
+import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.App as App
 import Html.Events exposing (onClick)
 import String exposing (..)
 
 
-main : Program Never
 main =
-    App.beginnerProgram
-        { model = init
+    Browser.sandbox
+        { init = init
         , view = view
         , update = update
         }
 
-
-
 -- MODEL
-
 
 type alias Calculator =
     { add : Float -> Float -> Float
@@ -56,7 +52,12 @@ init =
 
 parseFloat : String -> Float
 parseFloat input =
-    Result.withDefault 0 (String.toFloat input)
+    case String.toFloat input of
+        Nothing ->
+            0.0
+
+        Just val ->
+             val
 
 
 operation : Model -> (Float -> Float -> Float) -> Model
@@ -68,9 +69,7 @@ operation model function =
     }
 
 
-
 --update
-
 
 type Msg
     = None
@@ -122,9 +121,9 @@ update msg model =
 updateDisplay : Model -> Int -> Model
 updateDisplay model number =
     if model.append then
-        { model | display = model.display ++ toString (number) }
+        { model | display = model.display ++ String.fromInt (number) }
     else
-        { model | display = toString (number), append = True }
+        { model | display = String.fromInt (number), append = True }
 
 
 equal : Model -> Model
@@ -144,7 +143,7 @@ equal model =
 
 calculate : Model -> String
 calculate model =
-    model.function model.lastValue (parseFloat model.display) |> toString
+    model.function model.lastValue (parseFloat model.display) |> String.fromFloat
 
 
 zero : Model -> Model
@@ -173,10 +172,7 @@ appendDecimal string =
     else
         string ++ "."
 
-
-
 -- VIEW
-
 
 calculatorButton : Msg -> String -> Html Msg
 calculatorButton msg buttonText =
