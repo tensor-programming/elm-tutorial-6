@@ -52,12 +52,7 @@ init =
 
 parseFloat : String -> Float
 parseFloat input =
-    case String.toFloat input of
-        Nothing ->
-            0.0
-
-        Just val ->
-             val
+    Maybe.withDefault 0 (String.toFloat input)
 
 
 operation : Model -> (Float -> Float -> Float) -> Model
